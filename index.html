@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kulhar Chuski ☕</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#f7efe5;
+      color:#3b2f2f;
+      padding:14px;
+    }
+    header{
+      background:#7a4a2e;
+      color:#fff;
+      padding:14px;
+      border-radius:10px;
+      text-align:center;
+      margin-bottom:12px;
+    }
+    .table{
+      text-align:center;
+      font-weight:bold;
+      margin:8px 0 14px;
+    }
+    h2{
+      margin:14px 0 8px;
+      color:#7a4a2e;
+    }
+    .item{
+      background:#fff;
+      border-radius:10px;
+      padding:10px;
+      margin-bottom:8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:0 2px 5px rgba(0,0,0,.08);
+    }
+    .item span{
+      font-size:14px;
+    }
+    button{
+      background:#7a4a2e;
+      color:#fff;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .order{
+      width:100%;
+      margin-top:14px;
+      padding:12px;
+      font-size:16px;
+      background:#000;
+      border-radius:10px;
+    }
+    footer{
+      text-align:center;
+      font-size:12px;
+      opacity:.7;
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☕ Kulhar Chuski</h1>
+  <p>Desi Chai • Kulhar Love</p>
+</header>
+
+<div class="table" id="tableInfo"></div>
+
+<h2>🥤 Chai Special</h2>
+<div class="item"><span>Kulhar Chai ☕ - ₹30</span><button onclick="add('Kulhar Chai',30)">Add</button></div>
+<div class="item"><span>Adrak Chai 🌿 - ₹35</span><button onclick="add('Adrak Chai',35)">Add</button></div>
+<div class="item"><span>Masala Chai 🌶️ - ₹35</span><button onclick="add('Masala Chai',35)">Add</button></div>
+<div class="item"><span>Elaichi Chai 🌱 - ₹35</span><button onclick="add('Elaichi Chai',35)">Add</button></div>
+<div class="item"><span>Chocolate Chai 🍫 - ₹40</span><button onclick="add('Chocolate Chai',40)">Add</button></div>
+
+<h2>🍜 Snacks</h2>
+<div class="item"><span>Plain Maggi 🍜 - ₹50</span><button onclick="add('Plain Maggi',50)">Add</button></div>
+<div class="item"><span>Masala Maggi 🌶️ - ₹60</span><button onclick="add('Masala Maggi',60)">Add</button></div>
+<div class="item"><span>Butter Maggi 🧈 - ₹70</span><button onclick="add('Butter Maggi',70)">Add</button></div>
+<div class="item"><span>Bun Maska 🍞 - ₹40</span><button onclick="add('Bun Maska',40)">Add</button></div>
+<div class="item"><span>French Fries 🍟 - ₹80</span><button onclick="add('French Fries',80)">Add</button></div>
+
+<button class="order" onclick="placeOrder()">📲 Place Order</button>
+
+<footer>Powered by QR Menu System</footer>
+
+<script>
+  const BOT_TOKEN = "YOUR_BOT_TOKEN";
+  const CHAT_ID  = "YOUR_CHAT_ID";
+
+  let cart = [];
+  const params = new URLSearchParams(window.location.search);
+  const table = params.get("table") || "NA";
+  document.getElementById("tableInfo").innerText = "🪑 Table No: " + table;
+
+  function add(name, price){
+    cart.push({name, price});
+    alert(name + " added");
+  }
+
+  function placeOrder(){
+    if(cart.length===0){
+      alert("Please add items");
+      return;
+    }
+    let msg = `🧾 *KULHAR CHUSKI ORDER*\n\n🪑 Table: ${table}\n\n`;
+    let total = 0;
+    cart.forEach(i=>{
+      msg += `• ${i.name} - ₹${i.price}\n`;
+      total += i.price;
+    });
+    msg += `\n💰 *Total: ₹${total}*`;
+
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: msg,
+        parse_mode:"Markdown"
+      })
+    }).then(()=>{
+      alert("✅ Order sent!");
+      cart=[];
+    }).catch(()=>{
+      alert("❌ Error");
+    });
+  }
+</script>
+
+</body>
+</html>
